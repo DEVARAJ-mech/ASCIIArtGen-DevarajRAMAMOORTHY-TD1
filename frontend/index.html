@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D ASCII Art</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.25.2/plotly.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #ascii-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>3D ASCII Art Generator</h1>
+<label for="text-input">Enter Text:</label>
+<input type="text" id="text-input" placeholder="Type here...">
+<button id="generate-button">Generate 3D ASCII Art</button>
+
+<div id="ascii-container">
+    <h3>ASCII Art:</h3>
+    <pre id="ascii-output"></pre>
+</div>
+<div id="3d-plot-container"></div>
+
+<script>
+    document.getElementById('generate-button').addEventListener('click', async () => {
+        const textInput = document.getElementById('text-input').value;
+        const asciiOutput = document.getElementById('ascii-output');
+        const plotContainer = document.getElementById('3d-plot-container');
+
+        if (!textInput) {
+            alert("Please enter text.");
+            return;
+        }
+
+        try {
+            // Make a POST request to the backend
+            const response = await fetch('http://127.0.0.1:5000/generate_3d_ascii', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: textInput })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                const asciiArt = data.ascii_art;
+                asciiOutput.textContent = asciiArt;
+
+                // Create grid data from ASCII art
+                const gridData = asciiArt.split("\n").map((line, y) =>
+                    Array.from(line).map((char, x) => char.charCodeAt(0) - 32)
+                );
+
+                // Plot 3D ASCII art using Plotly
+                const zData = gridData.reverse(); // Flip for correct orientation
+                const xData = Array.from({ length: zData[0].length }, (_, i) => i);
+                const yData = Array.from({ length: zData.length }, (_, i) => i);
+
+                const plotData = [{
+                    z: zData,
+                    x: xData,
+                    y: yData,
+                    type: 'surface',
+                    colorscale: 'Viridis'
+                }];
+
+                Plotly.newPlot(plotContainer, plotData);
+            } else {
+                asciiOutput.textContent = `Error: ${data.error}`;
+            }
+        } catch (err) {
+            asciiOutput.textContent = `Error: ${err.message}`;
+        }
+    });
+</script>
+</body>
+</html>
