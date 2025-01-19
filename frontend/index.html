@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D ASCII Art</title>
+    <title>ASCII Art Generator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.25.2/plotly.min.js"></script>
     <style>
         body {
@@ -12,6 +12,13 @@
         }
         #ascii-container {
             margin-top: 20px;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ddd;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
     </style>
 </head>
@@ -40,7 +47,7 @@
 
         try {
             // Make a POST request to the backend
-            const response = await fetch('http://127.0.0.1:5000/generate_3d_ascii', {
+            const response = await fetch('http://127.0.0.1:5000/generate_ascii', { // Updated endpoint
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text: textInput })
