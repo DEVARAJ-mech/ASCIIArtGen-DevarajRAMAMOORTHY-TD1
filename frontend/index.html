@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+<label for="font-select">Choose Font:</label>
+<select id="font-select">
+    <option value="standard">Standard</option>
+    <option value="slant">Slant</option>
+    <option value="banner">Banner</option>
+    <!-- Add more fonts here -->
+</select>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASCII Art Generator</title>
@@ -27,7 +35,12 @@
 <label for="text-input">Enter Text:</label>
 <input type="text" id="text-input" placeholder="Type here...">
 <button id="generate-button">Generate 3D ASCII Art</button>
-
+<button id="download-button" style="margin-top: 10px;">Download ASCII Art</button>
+<div id="ascii-container">
+    <h3>ASCII Art:</h3>
+    <pre id="ascii-output"></pre>
+    <button id="download-button" style="margin-top: 10px;">Download ASCII Art</button>
+</div>
 <div id="ascii-container">
     <h3>ASCII Art:</h3>
     <pre id="ascii-output"></pre>
@@ -47,7 +60,7 @@
 
         try {
             // Make a POST request to the backend
-            const response = await fetch('http://127.0.0.1:5000/generate_ascii', { // Updated endpoint
+            const response = await fetch('http://127.0.0.1:5000/generate_3d_ascii', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text: textInput })
@@ -58,6 +71,9 @@
             if (response.ok) {
                 const asciiArt = data.ascii_art;
                 asciiOutput.textContent = asciiArt;
+
+                // Enable the download button after generating ASCII art
+                document.getElementById('download-button').disabled = false;
 
                 // Create grid data from ASCII art
                 const gridData = asciiArt.split("\n").map((line, y) =>
@@ -79,12 +95,34 @@
 
                 Plotly.newPlot(plotContainer, plotData);
             } else {
-                asciiOutput.textContent = `Error: ${data.error}`;
+                asciiOutput.textContent = Error: ${data.error};
             }
         } catch (err) {
-            asciiOutput.textContent = `Error: ${err.message}`;
+            asciiOutput.textContent = Error: ${err.message};
         }
     });
+
+    // Add functionality to download ASCII art
+    document.getElementById('download-button').addEventListener('click', () => {
+        const asciiArt = document.getElementById('ascii-output').textContent;
+
+        if (!asciiArt.trim()) {
+            alert("No ASCII art to download. Please generate ASCII art first.");
+            return;
+        }
+
+        // Create a Blob and trigger download
+        const blob = new Blob([asciiArt], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'ascii_art.txt';
+        link.click();
+        URL.revokeObjectURL(url);
+    });
+
+    // Initially disable the download button
+    document.getElementById('download-button').disabled = true;
 </script>
 </body>
 </html>

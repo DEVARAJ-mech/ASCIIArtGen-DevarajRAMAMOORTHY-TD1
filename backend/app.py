@@ -7,6 +7,8 @@ app = Flask(__name__)
 # Enable CORS for all routes and origins
 CORS(app, resources={r"/*": {"origins": "*"}})
 
+
+
 @app.route('/')
 def home():
     """Home route providing API information."""
@@ -25,8 +27,8 @@ def generate_ascii():
 
     try:
         # Generate ASCII art using pyfiglet
-        ascii_art = pyfiglet.figlet_format(text)
-        return jsonify({"ascii_art": ascii_art})
+       font = data.get("font", "standard")
+       ascii_art = pyfiglet.figlet_format(text, font=font)
     except Exception as e:
         # Return error message if ASCII generation fails
         return jsonify({"error": str(e)}), 500
