@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+<label for="font-select">Choose Font:</label>
+<select id="font-select">
+    <option value="standard">Standard</option>
+    <option value="slant">Slant</option>
+    <option value="banner">Banner</option>
+    <!-- Add more fonts here -->
+</select>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASCII Art Generator</title>
@@ -37,6 +45,7 @@
 <script>
     document.getElementById('generate-button').addEventListener('click', async () => {
         const textInput = document.getElementById('text-input').value;
+        const fontSelect = document.getElementById('font-select').value; // Get selected font
         const asciiOutput = document.getElementById('ascii-output');
         const plotContainer = document.getElementById('3d-plot-container');
 
@@ -46,11 +55,11 @@
         }
 
         try {
-            // Make a POST request to the backend
-            const response = await fetch('http://127.0.0.1:5000/generate_ascii', { // Updated endpoint
+            // Make a POST request to the backend with text and font
+            const response = await fetch('http://127.0.0.1:5000/generate_3d_ascii', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: textInput })
+                body: JSON.stringify({ text: textInput, font: fontSelect }) // Send font to backend
             });
 
             const data = await response.json();
@@ -79,10 +88,10 @@
 
                 Plotly.newPlot(plotContainer, plotData);
             } else {
-                asciiOutput.textContent = `Error: ${data.error}`;
+                asciiOutput.textContent = Error: ${data.error};
             }
         } catch (err) {
-            asciiOutput.textContent = `Error: ${err.message}`;
+            asciiOutput.textContent = Error: ${err.message};
         }
     });
 </script>
